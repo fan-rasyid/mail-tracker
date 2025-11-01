@@ -67,9 +67,9 @@
 
 
                                     <div class="form-group">
-                                        <label for="attachment">Attachment (PDF / Image)</label>
+                                        <label for="attachment">Attachment (PDF / Image) <span class="text-danger">*</span></label>
                                         <input type="file" class="form-control" id="attachment" name="file"
-                                            accept=".pdf, .jpg, .jpeg, .png">
+                                            accept=".pdf, .jpg, .jpeg, .png" required>
                                         <small class="form-text text-muted">
                                             Allowed formats: PDF, JPG, JPEG, PNG
                                         </small>

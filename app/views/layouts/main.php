@@ -34,25 +34,12 @@
         $basename = basename($url);
         ?>
 
-        <?php if ($basename == 'admstr'): ?>
+        <?php if ($basename == 'public' || $basename == 'registerView' || $basename == 'login'): ?>
             <!-- Display login form for '/adm' -->
             <?= $content ?>
-        <?php elseif (strpos($url, '/admstr') !== false): ?>
-            <div class="container-fluid">
-                <div class="row flex-nowrap">
-                    <!-- Sidebar -->
-                    <?php // include "sidebar.php"; ?>
-                    <div class="col px-0">
-                        <!-- Admin Navbar -->
-                        <?php //    include "nav-admin.php" ?>
-                        <!-- Main Content -->
-                        <?= $content ?>
-                    </div>
-                </div>
-            </div>
         <?php else: ?>
             <!-- Navbar -->
-            <?php // include "navbar.php"; ?>
+            <?php include "header.php"; ?>
             <!-- Main Content -->
             <?php Flasher::flash(); ?>
             <?= $content ?>

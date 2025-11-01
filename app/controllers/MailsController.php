@@ -18,14 +18,52 @@ class MailsController extends Controller
     }
 
     public function store(){
+        // Server-side validation
+        $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
+        $errors = [];
+
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                $errors[] = ucfirst($field) . ' is required';
+            }
+        }
+
+        // Check if file is required - if $_FILES is not set or has no name, it's missing
+        if (!isset($_FILES['file']) || empty($_FILES['file']['name']) || $_FILES['file']['error'] === UPLOAD_ERR_NO_FILE) {
+            $errors[] = 'File is required';
+        }
+        
+        if (!empty($errors)) {
+            Flasher::setFlasher(implode(', ', $errors), 'failed', 'danger');
+            header('location:' . BASEURL . 'MailsController/incomingMail');
+            exit;
+        }
+
         if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            // Validate file type
+            $allowed_extensions = ['pdf', 'jpg', 'jpeg', 'png'];
+            $extension = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+            
+            if (!in_array($extension, $allowed_extensions)) {
+                Flasher::setFlasher('File type not allowed. Only PDF, JPG, JPEG, and PNG files are allowed.', 'failed', 'danger');
+                header('location:' . BASEURL . 'MailsController/incomingMail');
+                exit;
+            }
+            
+            // Validate file size 
+            $max_file_size = 5 * 1024 * 1024; // 5MB in bytes
+            if ($_FILES['file']['size'] > $max_file_size) {
+                Flasher::setFlasher('File size too large. Maximum allowed size is 5MB.', 'failed', 'danger');
+                header('location:' . BASEURL . 'MailsController/incomingMail');
+                exit;
+            }
+
             $uploadDir = UPLOAD_FOLDER;
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true); // Create directory if it doesn't exist
             }
 
             // Replace the file name
-            $extension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION); // Get file extension
             $newFileName = 'mail_' . time() . '.' . $extension;
             $uploadFile = $uploadDir . $newFileName; // Full file system path
 
@@ -33,10 +71,12 @@ class MailsController extends Controller
             if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadFile)) {
                 $_POST['file'] = $newFileName;
             } else {
+                Flasher::setFlasher('File upload failed', 'failed', 'danger');
                 header('location:' . BASEURL . 'MailsController/incomingMail');
                 exit;
             }
         } else {
+            // This shouldn't be reached now because we check for file presence in validation above
             $_POST['file'] = null; // No file uploaded
         }
 
@@ -60,14 +100,52 @@ class MailsController extends Controller
     }
 
     public function storeOutgoing(){
+        // Server-side validation
+        $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
+        $errors = [];
+        
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                $errors[] = ucfirst($field) . ' is required';
+            }
+        }
+
+        // Check if file is required - if $_FILES is not set or has no name, it's missing
+        if (!isset($_FILES['file']) || empty($_FILES['file']['name']) || $_FILES['file']['error'] === UPLOAD_ERR_NO_FILE) {
+            $errors[] = 'File is required';
+        }
+        
+        if (!empty($errors)) {
+            Flasher::setFlasher(implode(', ', $errors), 'failed', 'danger');
+            header('location:' . BASEURL . 'MailsController/outgoingMail');
+            exit;
+        }
+
         if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            // Validate file type
+            $allowed_extensions = ['pdf', 'jpg', 'jpeg', 'png'];
+            $extension = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+            
+            if (!in_array($extension, $allowed_extensions)) {
+                Flasher::setFlasher('File type not allowed. Only PDF, JPG, JPEG, and PNG files are allowed.', 'failed', 'danger');
+                header('location:' . BASEURL . 'MailsController/outgoingMail');
+                exit;
+            }
+            
+            // Validate file size 
+            $max_file_size = 5 * 1024 * 1024; // 5MB in bytes
+            if ($_FILES['file']['size'] > $max_file_size) {
+                Flasher::setFlasher('File size too large. Maximum allowed size is 5MB.', 'failed', 'danger');
+                header('location:' . BASEURL . 'MailsController/outgoingMail');
+                exit;
+            }
+
             $uploadDir = UPLOAD_FOLDER;
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true); // Create directory if it doesn't exist
             }
 
             // Replace the file name
-            $extension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION); // Get file extension
             $newFileName = 'mail_' . time() . '.' . $extension;
             $uploadFile = $uploadDir . $newFileName; // Full file system path
 
@@ -75,10 +153,12 @@ class MailsController extends Controller
             if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadFile)) {
                 $_POST['file'] = $newFileName;
             } else {
+                Flasher::setFlasher('File upload failed', 'failed', 'danger');
                 header('location:' . BASEURL . 'MailsController/outgoingMail');
                 exit;
             }
         } else {
+            // This shouldn't be reached now because we check for file presence in validation above
             $_POST['file'] = null; // No file uploaded
         }
 
@@ -118,16 +198,65 @@ class MailsController extends Controller
     }
 
     public function update(){
+        // Server-side validation - don't make file required for updates, only for creation
+        $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
+        $errors = [];
+        
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                $errors[] = ucfirst($field) . ' is required';
+            }
+        }
+        
+        if (!empty($errors)) {
+            Flasher::setFlasher(implode(', ', $errors), 'failed', 'danger');
+            // Redirect based on the type of mail being edited
+            if ($_POST['type'] === 'out') {
+                header('location:' . BASEURL . 'MailsController/outgoingMail');
+            } else {
+                header('location:' . BASEURL . 'MailsController/incomingMail');
+            }
+            exit;
+        }
+
         $mail = $this->model('MailsModel')->getDataById($_POST['id_mail']); // Assuming id_mail is in POST
         
         if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/mail-tracker/public/uploads/'; // Correct path for uploads
+            // If a new file is being uploaded during update, validate it
+            // Validate file type
+            $allowed_extensions = ['pdf', 'jpg', 'jpeg', 'png'];
+            $extension = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+            
+            if (!in_array($extension, $allowed_extensions)) {
+                Flasher::setFlasher('File type not allowed. Only PDF, JPG, JPEG, and PNG files are allowed.', 'failed', 'danger');
+                // Redirect based on the type of mail being edited
+                if ($_POST['type'] === 'out') {
+                    header('location:' . BASEURL . 'MailsController/outgoingMail');
+                } else {
+                    header('location:' . BASEURL . 'MailsController/incomingMail');
+                }
+                exit;
+            }
+            
+            // Validate file size 
+            $max_file_size = 5 * 1024 * 1024; // 5MB in bytes
+            if ($_FILES['file']['size'] > $max_file_size) {
+                Flasher::setFlasher('File size too large. Maximum allowed size is 5MB.', 'failed', 'danger');
+                // Redirect based on the type of mail being edited
+                if ($_POST['type'] === 'out') {
+                    header('location:' . BASEURL . 'MailsController/outgoingMail');
+                } else {
+                    header('location:' . BASEURL . 'MailsController/incomingMail');
+                }
+                exit;
+            }
+
+            $uploadDir = UPLOAD_FOLDER;
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true); // Create directory if it doesn't exist
             }
 
             // Replace the file name
-            $extension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION); // Get file extension
             $newFileName = 'mail_' . time() . '.' . $extension;
             $uploadFile = $uploadDir . $newFileName; // Full file system path
 
@@ -147,7 +276,7 @@ class MailsController extends Controller
             $_POST['file'] = isset($mail['file']) ? $mail['file'] : null; // Keep existing file if no new file uploaded
         } else {
             // Remove existing file
-            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/mail-tracker/public/uploads/';
+            $uploadDir = UPLOAD_FOLDER;
             if (!empty($mail['file']) && isset($mail['file']) && file_exists($uploadDir . $mail['file'])) {
                 unlink($uploadDir . $mail['file']);
             }
