@@ -21,31 +21,18 @@ class UsersController extends Controller
             'title' => 'Edit User',
             'users' => $user
         ];
-        return $this->view('users/edit', $data);
-    }
-
-    public function update(){
-        AuthHelper::requireAuth();
-        if ($this->model('UsersModel')->updateUser($_POST) > 0) {
-            Flasher::setFlasher('success', 'updated', 'success');
-            header('location:' . BASEURL . '/admstr/category');
-            exit;
-        } else {
-            Flasher::setFlasher('failed', 'updated', 'danger');
-            header('location:' . BASEURL . '/admstr/category');
-            exit;
-        }
+        return $this->view('user/edit', $data);
     }
 
     public function delete($id){
         AuthHelper::requireAuth();
         if ($this->model('UsersModel')->deleteUser($id) > 0) {
-            Flasher::setFlasher('success', 'updated', 'success');
-            header('location:' . BASEURL . '/admstr/category');
+            Flasher::setFlasher('User deleted successfully', 'success', 'success');
+            header('location:' . BASEURL . '/UsersController/listUsers');
             exit;
         } else {
-            Flasher::setFlasher('failed', 'updated', 'danger');
-            header('location:' . BASEURL . '/admstr/category');
+            Flasher::setFlasher('Failed to delete User', 'failed', 'danger');
+            header('location:' . BASEURL . '/UsersController/listUsers');
             exit;
         }
     }
