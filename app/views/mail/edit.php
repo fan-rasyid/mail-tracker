@@ -84,12 +84,6 @@
                                                 <a href="<?= BASEURL . 'uploads/' . $data['mails']['file'] ?>" target="_blank">
                                                     View Current Attachment
                                                 </a>
-                                                <div class="form-check mt-1">
-                                                    <input class="form-check-input" type="checkbox" id="remove_file" name="remove_file" value="1">
-                                                    <label class="form-check-label" for="remove_file">
-                                                        Remove current attachment
-                                                    </label>
-                                                </div>
                                             </div>
                                         <?php else: ?>
                                             <p class="text-muted">No attachment currently</p>

@@ -198,13 +198,21 @@ class MailsController extends Controller
     }
 
     public function update(){
-        // Server-side validation - don't make file required for updates, only for creation
+        // Server-side validation for updates - only validate if fields are being changed to empty
+        // but allow existing empty values to remain unchanged
         $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
         $errors = [];
         
+        // Only validate that required fields aren't being emptied if they previously had values
+        $mail = $this->model('MailsModel')->getDataById($_POST['id_mail']); // Get current record first
+        
         foreach ($required_fields as $field) {
+            // Check if field is empty in submission
             if (empty($_POST[$field])) {
-                $errors[] = ucfirst($field) . ' is required';
+                // Only show error if the original record had a value for this field
+                if (!empty($mail[$field])) {
+                    $errors[] = ucfirst($field) . ' cannot be empty when previously filled';
+                }
             }
         }
         
@@ -219,8 +227,6 @@ class MailsController extends Controller
             exit;
         }
 
-        $mail = $this->model('MailsModel')->getDataById($_POST['id_mail']); // Assuming id_mail is in POST
-        
         if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
             // If a new file is being uploaded during update, validate it
             // Validate file type
