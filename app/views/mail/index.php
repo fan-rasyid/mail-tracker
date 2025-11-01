@@ -36,7 +36,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table table-striped" id="table-incoming">
+                                    <table class="table table-striped" id="table-1">
                                         <thead>
                                             <tr>
                                                 <th class="text-center">#</th>
