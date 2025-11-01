@@ -24,9 +24,6 @@
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h4>Admin Table</h4>
-                                <a href="<?= BASEURL ?>AdminController/create" class="btn btn-primary">
-                                    <i class="fas fa-plus"></i> Add New Admin
-                                </a>
                             </div>
 
                             <div class="card-body">
@@ -49,11 +46,7 @@
                                                     <td><?= htmlspecialchars($admin['username']) ?></td>
                                                     <td><?= htmlspecialchars($admin['role']) ?></td>
                                                     <td>
-                                                        <a href="<?= BASEURL ?>AdminController/edit/<?= $admin['id_user'] ?>"
-                                                            class="btn btn-warning btn-sm">
-                                                            Edit
-                                                        </a>
-                                                        <a href="<?= BASEURL ?>AdminController/delete/<?= $admin['id_user'] ?>"
+                                                        <a href="<?= BASEURL ?>UsersController/delete/<?= $admin['id_user'] ?>"
                                                             class="btn btn-danger btn-sm"
                                                             onclick="return confirm('Are you sure you want to delete this admin?');">
                                                             Delete
