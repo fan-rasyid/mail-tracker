@@ -19,17 +19,4 @@ class Controller
         require_once '../app/models/' . $model . '.php';
         return new $model;
     }
-
-    protected function isAuthenticated()
-    {
-        return isset($_SESSION['user']) && !empty($_SESSION['user']);
-    }
-
-    protected function requireAuth()
-    {
-        if (!$this->isAuthenticated()) {
-            header('Location: ' . BASEURL . 'AuthController');
-            exit();
-        }
-    }
 }

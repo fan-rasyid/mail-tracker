@@ -5,7 +5,7 @@ require_once __DIR__ . "/../cores/Controller.php";
 class MailsController extends Controller
 {
     public function index(){
-        $this->requireAuth();
+        AuthHelper::requireAuth();
         $mails = $this->model('MailsModel')->getAllMails();
         $data = [
             'title' => 'Daftar Mail',
@@ -15,12 +15,12 @@ class MailsController extends Controller
     }
 
     public function create(){
-        $this->requireAuth();
+        AuthHelper::requireAuth();
         return $this->view('mail/create');
     }
 
     public function store(){
-        $this->requireAuth();
+        AuthHelper::requireAuth();
         // Server-side validation
         $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
         $errors = [];
@@ -42,39 +42,14 @@ class MailsController extends Controller
             exit;
         }
 
-        if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
-            // Validate file type
-            $allowed_extensions = ['pdf', 'jpg', 'jpeg', 'png'];
-            $extension = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+        if (UploadHelper::hasFile('file')) {
+            // Use the simplified upload helper
+            $upload_result = UploadHelper::upload('file', 'uploads');
             
-            if (!in_array($extension, $allowed_extensions)) {
-                Flasher::setFlasher('File type not allowed. Only PDF, JPG, JPEG, and PNG files are allowed.', 'failed', 'danger');
-                header('location:' . BASEURL . 'MailsController/incomingMail');
-                exit;
-            }
-            
-            // Validate file size 
-            $max_file_size = 5 * 1024 * 1024; // 5MB in bytes
-            if ($_FILES['file']['size'] > $max_file_size) {
-                Flasher::setFlasher('File size too large. Maximum allowed size is 5MB.', 'failed', 'danger');
-                header('location:' . BASEURL . 'MailsController/incomingMail');
-                exit;
-            }
-
-            $uploadDir = UPLOAD_FOLDER;
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true); // Create directory if it doesn't exist
-            }
-
-            // Replace the file name
-            $newFileName = 'mail_' . time() . '.' . $extension;
-            $uploadFile = $uploadDir . $newFileName; // Full file system path
-
-            // Move the uploaded file
-            if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadFile)) {
-                $_POST['file'] = $newFileName;
+            if ($upload_result['success']) {
+                $_POST['file'] = $upload_result['file_name'];
             } else {
-                Flasher::setFlasher('File upload failed', 'failed', 'danger');
+                Flasher::setFlasher($upload_result['message'], 'failed', 'danger');
                 header('location:' . BASEURL . 'MailsController/incomingMail');
                 exit;
             }
@@ -99,12 +74,12 @@ class MailsController extends Controller
     }
 
     public function createOutgoing(){
-        $this->requireAuth();
+        AuthHelper::requireAuth();
         return $this->view('mail/create_outgoing');
     }
 
     public function storeOutgoing(){
-        $this->requireAuth();
+        AuthHelper::requireAuth();
         // Server-side validation
         $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
         $errors = [];
@@ -126,39 +101,14 @@ class MailsController extends Controller
             exit;
         }
 
-        if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
-            // Validate file type
-            $allowed_extensions = ['pdf', 'jpg', 'jpeg', 'png'];
-            $extension = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+        if (UploadHelper::hasFile('file')) {
+            // Use the simplified upload helper
+            $upload_result = UploadHelper::upload('file', 'uploads');
             
-            if (!in_array($extension, $allowed_extensions)) {
-                Flasher::setFlasher('File type not allowed. Only PDF, JPG, JPEG, and PNG files are allowed.', 'failed', 'danger');
-                header('location:' . BASEURL . 'MailsController/outgoingMail');
-                exit;
-            }
-            
-            // Validate file size 
-            $max_file_size = 5 * 1024 * 1024; // 5MB in bytes
-            if ($_FILES['file']['size'] > $max_file_size) {
-                Flasher::setFlasher('File size too large. Maximum allowed size is 5MB.', 'failed', 'danger');
-                header('location:' . BASEURL . 'MailsController/outgoingMail');
-                exit;
-            }
-
-            $uploadDir = UPLOAD_FOLDER;
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true); // Create directory if it doesn't exist
-            }
-
-            // Replace the file name
-            $newFileName = 'mail_' . time() . '.' . $extension;
-            $uploadFile = $uploadDir . $newFileName; // Full file system path
-
-            // Move the uploaded file
-            if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadFile)) {
-                $_POST['file'] = $newFileName;
+            if ($upload_result['success']) {
+                $_POST['file'] = $upload_result['file_name'];
             } else {
-                Flasher::setFlasher('File upload failed', 'failed', 'danger');
+                Flasher::setFlasher($upload_result['message'], 'failed', 'danger');
                 header('location:' . BASEURL . 'MailsController/outgoingMail');
                 exit;
             }
@@ -183,7 +133,7 @@ class MailsController extends Controller
     }
 
     public function edit($id, $type = null){
-        $this->requireAuth();
+        AuthHelper::requireAuth();
         $mail = $this->model('MailsModel')->getDataById($id);
         if ($mail) {
             $data = [
@@ -204,7 +154,7 @@ class MailsController extends Controller
     }
 
     public function update(){
-        $this->requireAuth();
+        AuthHelper::requireAuth();
         // Server-side validation for updates - only validate if fields are being changed to empty
         // but allow existing empty values to remain unchanged
         $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
@@ -234,55 +184,28 @@ class MailsController extends Controller
             exit;
         }
 
-        if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
-            // If a new file is being uploaded during update, validate it
-            // Validate file type
-            $allowed_extensions = ['pdf', 'jpg', 'jpeg', 'png'];
-            $extension = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+        if (UploadHelper::hasFile('file')) {
+            // Use the simplified upload helper
+            $upload_result = UploadHelper::upload('file', 'uploads');
             
-            if (!in_array($extension, $allowed_extensions)) {
-                Flasher::setFlasher('File type not allowed. Only PDF, JPG, JPEG, and PNG files are allowed.', 'failed', 'danger');
-                // Redirect based on the type of mail being edited
-                if ($_POST['type'] === 'out') {
-                    header('location:' . BASEURL . 'MailsController/outgoingMail');
-                } else {
-                    header('location:' . BASEURL . 'MailsController/incomingMail');
-                }
-                exit;
-            }
-            
-            // Validate file size 
-            $max_file_size = 5 * 1024 * 1024; // 5MB in bytes
-            if ($_FILES['file']['size'] > $max_file_size) {
-                Flasher::setFlasher('File size too large. Maximum allowed size is 5MB.', 'failed', 'danger');
-                // Redirect based on the type of mail being edited
-                if ($_POST['type'] === 'out') {
-                    header('location:' . BASEURL . 'MailsController/outgoingMail');
-                } else {
-                    header('location:' . BASEURL . 'MailsController/incomingMail');
-                }
-                exit;
-            }
-
-            $uploadDir = UPLOAD_FOLDER;
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true); // Create directory if it doesn't exist
-            }
-
-            // Replace the file name
-            $newFileName = 'mail_' . time() . '.' . $extension;
-            $uploadFile = $uploadDir . $newFileName; // Full file system path
-
-            // Move the uploaded file
-            if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadFile)) {
+            if ($upload_result['success']) {
+                $new_file_name = $upload_result['file_name'];
+                $uploadDir = UPLOAD_FOLDER;
+                
                 // Remove old file if exists
                 if (!empty($mail['file']) && isset($mail['file']) && file_exists($uploadDir . $mail['file'])) {
                     unlink($uploadDir . $mail['file']);
                 }
-                $_POST['file'] = $newFileName;
+                
+                $_POST['file'] = $new_file_name;
             } else {
-                Flasher::setFlasher('File upload failed', 'failed', 'danger');
-                header('location:' . BASEURL . 'MailsController/incomingMail');
+                Flasher::setFlasher($upload_result['message'], 'failed', 'danger');
+                // Redirect based on the type of mail being edited
+                if ($_POST['type'] === 'out') {
+                    header('location:' . BASEURL . 'MailsController/outgoingMail');
+                } else {
+                    header('location:' . BASEURL . 'MailsController/incomingMail');
+                }
                 exit;
             }
         } elseif (!isset($_POST['remove_file']) || $_POST['remove_file'] !== '1') {
@@ -318,7 +241,7 @@ class MailsController extends Controller
     }
 
     public function delete($id){
-        $this->requireAuth();
+        AuthHelper::requireAuth();
         // Get the mail to determine its type before deletion
         $mail = $this->model('MailsModel')->getDataById($id);
         
@@ -344,7 +267,7 @@ class MailsController extends Controller
     }
 
     public function incomingMail(){
-        $this->requireAuth();
+        AuthHelper::requireAuth();
         $mails = $this->model('MailsModel')->getIncomingMails();
         $data = [
             'title' => 'Daftar Mail',
@@ -355,7 +278,7 @@ class MailsController extends Controller
     }
 
         public function outgoingMail(){
-        $this->requireAuth();
+        AuthHelper::requireAuth();
         $mails = $this->model('MailsModel')->getOutgoingMails();
         $data = [
             'title' => 'Daftar Mail',

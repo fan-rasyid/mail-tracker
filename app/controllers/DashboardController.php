@@ -6,7 +6,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $this->requireAuth();
+        AuthHelper::requireAuth();
         return $this->view('dashboard/dashboard');
     }
 
