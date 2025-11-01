@@ -1,9 +1,4 @@
 <div class="main-wrapper main-wrapper-1">
-    <?php
-    require_once __DIR__ . "/../layouts/header.php";
-    require_once __DIR__ . "/../layouts/sidebar.php";
-
-    ?>
 
     <!-- Main Content -->
     <div class="main-content">
@@ -54,13 +49,13 @@
                                                     <td><?= htmlspecialchars($admin['username']) ?></td>
                                                     <td><?= htmlspecialchars($admin['role']) ?></td>
                                                     <td>
-                                                        <a href="<?= BASEURL ?>AdminController/edit/<?= $admin['id_user'] ?>" 
-                                                           class="btn btn-warning btn-sm">
+                                                        <a href="<?= BASEURL ?>AdminController/edit/<?= $admin['id_user'] ?>"
+                                                            class="btn btn-warning btn-sm">
                                                             Edit
                                                         </a>
-                                                        <a href="<?= BASEURL ?>AdminController/delete/<?= $admin['id_user'] ?>" 
-                                                           class="btn btn-danger btn-sm" 
-                                                           onclick="return confirm('Are you sure you want to delete this admin?');">
+                                                        <a href="<?= BASEURL ?>AdminController/delete/<?= $admin['id_user'] ?>"
+                                                            class="btn btn-danger btn-sm"
+                                                            onclick="return confirm('Are you sure you want to delete this admin?');">
                                                             Delete
                                                         </a>
                                                     </td>

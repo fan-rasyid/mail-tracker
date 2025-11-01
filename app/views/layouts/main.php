@@ -39,12 +39,16 @@
             <?= $content ?>
         <?php else: ?>
             <!-- Navbar -->
-            <?php include "header.php"; ?>
+            <?php
+            include "header.php";
+            include "sidebar.php";
+            ?>
             <!-- Main Content -->
             <?php Flasher::flash(); ?>
             <?= $content ?>
             <!-- Footer -->
-            <?php // include "footer.php"; ?>
+            <?php // include "footer.php"; 
+            ?>
         <?php endif ?>
     </div>
 
