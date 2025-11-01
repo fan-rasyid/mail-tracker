@@ -1,10 +1,4 @@
 <div class="main-wrapper main-wrapper-1">
-    <?php
-
-    require_once __DIR__ . "/../layouts/header.php";
-    require_once __DIR__ . "/../layouts/sidebar.php";
-
-    ?>
 
     <!-- Main Content -->
     <div class="main-content">
