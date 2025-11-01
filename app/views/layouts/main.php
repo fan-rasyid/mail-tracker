@@ -34,7 +34,7 @@
         $basename = basename($url);
         ?>
 
-        <?php if ($basename == 'public' || $basename == 'registerView' || $basename == 'login'): ?>
+        <?php if ($basename == 'public' || $basename == 'registerView' || $basename == 'login' || $basename == 'AuthController'): ?>
             <!-- Display login form for '/adm' -->
             <?= $content ?>
         <?php else: ?>

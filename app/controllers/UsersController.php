@@ -5,6 +5,7 @@ require_once __DIR__ . "/../cores/Controller.php";
 class UsersController extends Controller
 {
     public function index(){
+        $this->requireAuth();
         $users = $this->model('UsersModel')->getAllUsers();
         $data = [
             'title' => 'Daftar User',
@@ -14,6 +15,7 @@ class UsersController extends Controller
     }
 
     public function edit($id){
+        $this->requireAuth();
         $user = $this->model('UsersModel')->getDataById($id);
         $data = [
             'title' => 'Edit User',
@@ -23,6 +25,7 @@ class UsersController extends Controller
     }
 
     public function update(){
+        $this->requireAuth();
         if ($this->model('UsersModel')->updateUser($_POST) > 0) {
             Flasher::setFlasher('success', 'updated', 'success');
             header('location:' . BASEURL . '/admstr/category');
@@ -35,6 +38,7 @@ class UsersController extends Controller
     }
 
     public function delete($id){
+        $this->requireAuth();
         if ($this->model('UsersModel')->deleteUser($id) > 0) {
             Flasher::setFlasher('success', 'updated', 'success');
             header('location:' . BASEURL . '/admstr/category');

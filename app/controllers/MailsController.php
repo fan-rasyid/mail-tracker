@@ -5,6 +5,7 @@ require_once __DIR__ . "/../cores/Controller.php";
 class MailsController extends Controller
 {
     public function index(){
+        $this->requireAuth();
         $mails = $this->model('MailsModel')->getAllMails();
         $data = [
             'title' => 'Daftar Mail',
@@ -14,10 +15,12 @@ class MailsController extends Controller
     }
 
     public function create(){
+        $this->requireAuth();
         return $this->view('mail/create');
     }
 
     public function store(){
+        $this->requireAuth();
         // Server-side validation
         $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
         $errors = [];
@@ -96,10 +99,12 @@ class MailsController extends Controller
     }
 
     public function createOutgoing(){
+        $this->requireAuth();
         return $this->view('mail/create_outgoing');
     }
 
     public function storeOutgoing(){
+        $this->requireAuth();
         // Server-side validation
         $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
         $errors = [];
@@ -178,6 +183,7 @@ class MailsController extends Controller
     }
 
     public function edit($id, $type = null){
+        $this->requireAuth();
         $mail = $this->model('MailsModel')->getDataById($id);
         if ($mail) {
             $data = [
@@ -198,6 +204,7 @@ class MailsController extends Controller
     }
 
     public function update(){
+        $this->requireAuth();
         // Server-side validation for updates - only validate if fields are being changed to empty
         // but allow existing empty values to remain unchanged
         $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
@@ -311,6 +318,7 @@ class MailsController extends Controller
     }
 
     public function delete($id){
+        $this->requireAuth();
         // Get the mail to determine its type before deletion
         $mail = $this->model('MailsModel')->getDataById($id);
         
@@ -336,6 +344,7 @@ class MailsController extends Controller
     }
 
     public function incomingMail(){
+        $this->requireAuth();
         $mails = $this->model('MailsModel')->getIncomingMails();
         $data = [
             'title' => 'Daftar Mail',
@@ -346,6 +355,7 @@ class MailsController extends Controller
     }
 
         public function outgoingMail(){
+        $this->requireAuth();
         $mails = $this->model('MailsModel')->getOutgoingMails();
         $data = [
             'title' => 'Daftar Mail',
