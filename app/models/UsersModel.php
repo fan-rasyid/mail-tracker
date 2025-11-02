@@ -50,6 +50,15 @@ class UsersModel extends Model
     public function createUser($data)
     {
         try {
+            $checksql = "SELECT * FROM {$this->table_name} WHERE username = :username";
+            $this->query($checksql);
+            $this->bind(':username', $data['username']);
+            $user = $this->single($checksql);
+
+            if ($user) {
+                return ['success' => false, 'message' => 'Username already exists.'];
+            }
+
             $sql = "INSERT INTO {$this->table_name} (username, password, name, role) 
                     VALUES (:username, :password, :name, :role)";
             $this->query($sql);
