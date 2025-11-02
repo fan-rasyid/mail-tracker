@@ -12,6 +12,11 @@
               </div>
 
               <div class="card-body">
+                <?php if (!empty($error)) : ?>
+                  <div class="alert alert-danger">
+                    <?= htmlspecialchars($error) ?>
+                  </div>
+                <?php endif; ?>
                 <form method="POST" action="<?= BASEURL ?>AuthController/register">
 
                   <div class="form-group">

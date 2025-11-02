@@ -61,7 +61,7 @@ class AuthController extends Controller
                 exit();
             } else {
                 $error_message = $result['message'];
-                return $this->view('auth/register');
+                return $this->view('auth/register', ['error' => $error_message]);
             }
         } else {
             return $this->view('auth/register');
