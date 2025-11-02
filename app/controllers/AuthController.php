@@ -6,11 +6,14 @@ class AuthController extends Controller
 {
     public function index()
     {
-        return $this->view('auth/login');
+        $data = [
+            'title' => "Login"
+        ];
+        return $this->view('auth/login', $data);
     }
     public function login()
     {
-        
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'] ?? '';
             $password = $_POST['password'] ?? '';
@@ -19,19 +22,23 @@ class AuthController extends Controller
 
             if ($result['success']) {
                 $_SESSION['user'] = $result['user'];
-                header('Location: '.BASEURL.'DashboardController');
+                header('Location: ' . BASEURL . 'DashboardController');
                 exit();
             } else {
                 $error_message = $result['message'];
                 return $this->view('auth/login');
             }
         } else {
-           return $this->view('auth/login');
+            return $this->view('auth/login');
         }
     }
 
-    public function registerView(){
-        return $this->view('auth/register');
+    public function registerView()
+    {
+        $data = [
+            'title' => "Register"
+        ];
+        return $this->view('auth/register', $data);
     }
     public function register()
     {
@@ -50,7 +57,7 @@ class AuthController extends Controller
             // var_dump($result);die;
             if ($result['success']) {
                 $_SESSION['user'] = $result['user'];
-                header('Location: '.BASEURL.'DashboardController');
+                header('Location: ' . BASEURL . 'DashboardController');
                 exit();
             } else {
                 $error_message = $result['message'];
@@ -64,7 +71,7 @@ class AuthController extends Controller
     public function logout()
     {
         session_destroy();
-        header('Location:'.BASEURL);
+        header('Location:' . BASEURL);
         exit();
     }
 }

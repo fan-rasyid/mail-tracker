@@ -4,7 +4,8 @@ require_once __DIR__ . "/../cores/Controller.php";
 
 class UsersController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         AuthHelper::requireAuth();
         $users = $this->model('UsersModel')->getAllUsers();
         $data = [
@@ -14,17 +15,8 @@ class UsersController extends Controller
         return $this->view('user/index', $data);
     }
 
-    public function edit($id){
-        AuthHelper::requireAuth();
-        $user = $this->model('UsersModel')->getDataById($id);
-        $data = [
-            'title' => 'Edit User',
-            'users' => $user
-        ];
-        return $this->view('user/edit', $data);
-    }
-
-    public function delete($id){
+    public function delete($id)
+    {
         AuthHelper::requireAuth();
         if ($this->model('UsersModel')->deleteUser($id) > 0) {
             Flasher::setFlasher('User deleted successfully', 'success', 'success');

@@ -35,7 +35,7 @@
                 </button>
               </div>
             </form>
-
+            <p>Don't have account ? <a href="<?= BASEURL ?>AuthController/registerView">Register Here</a></p>
           </div>
         </div>
         <div class="simple-footer">

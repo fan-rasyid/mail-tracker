@@ -28,14 +28,16 @@
 
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table table-striped" id="table-admin">
+                                    <table class="table table-striped" id="table-1">
                                         <thead>
                                             <tr>
-                                                <th class="text-center">#</th>
+                                                <th class="text-center">No</th>
                                                 <th>Name</th>
                                                 <th>Username</th>
                                                 <th>Role</th>
-                                                <th>Action</th>
+                                                <?php if (!empty($user['role']) && $user['role'] === 'admin'): ?>
+                                                    <th>Action</th>
+                                                <?php endif ?>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -45,13 +47,15 @@
                                                     <td><?= htmlspecialchars($admin['name']) ?></td>
                                                     <td><?= htmlspecialchars($admin['username']) ?></td>
                                                     <td><?= htmlspecialchars($admin['role']) ?></td>
-                                                    <td>
-                                                        <a href="<?= BASEURL ?>UsersController/delete/<?= $admin['id_user'] ?>"
-                                                            class="btn btn-danger btn-sm"
-                                                            onclick="return confirm('Are you sure you want to delete this admin?');">
-                                                            Delete
-                                                        </a>
-                                                    </td>
+                                                    <?php if (!empty($user['role']) && $user['role'] === 'admin'): ?>
+                                                        <td>
+                                                            <a href="<?= BASEURL ?>UsersController/delete/<?= $admin['id_user'] ?>"
+                                                                class="btn btn-danger btn-sm"
+                                                                onclick="return confirm('Are you sure you want to delete this admin?');">
+                                                                Delete
+                                                            </a>
+                                                        </td>
+                                                    <?php endif ?>
                                                 </tr>
                                             <?php endforeach; ?>
                                         </tbody>

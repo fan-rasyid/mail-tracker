@@ -7,7 +7,9 @@
             </div>
 
             <div class="card card-primary">
-              <div class="card-header"><h4>Register</h4></div>
+              <div class="card-header">
+                <h4>Register</h4>
+              </div>
 
               <div class="card-body">
                 <form method="POST" action="<?= BASEURL ?>AuthController/register">
@@ -37,6 +39,7 @@
                     </button>
                   </div>
                 </form>
+                <p>Already have an account ? <a href="<?= BASEURL ?>AuthController">Sign In </a></p>
               </div>
             </div>
             <div class="simple-footer">

@@ -24,21 +24,25 @@
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h4>Incoming Mail Table</h4>
-                                <a href="<?= BASEURL ?>MailsController/create" class="btn btn-primary">
-                                    <i class="fas fa-plus"></i> Add New Mail
-                                </a>
+                                <?php if (!empty($user['role']) && $user['role'] === 'admin'): ?>
+                                    <a href="<?= BASEURL ?>MailsController/create" class="btn btn-primary">
+                                        <i class="fas fa-plus"></i> Add New Mail
+                                    </a>
+                                <?php endif ?>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-striped" id="table-1">
                                         <thead>
                                             <tr>
-                                                <th class="text-center">#</th>
+                                                <th class="text-center">No</th>
                                                 <th>Sender</th>
                                                 <th>Subject</th>
                                                 <th>Date Received</th>
                                                 <th>Attachment</th>
-                                                <th>Action</th>
+                                                <?php if (!empty($user['role']) && $user['role'] === 'admin'): ?>
+                                                    <th>Action</th>
+                                                <?php endif; ?>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -50,23 +54,25 @@
                                                     <td><?= htmlspecialchars($mail['date']) ?></td>
                                                     <td>
                                                         <?php if (!empty($mail['file'])): ?>
-                                                            <a href="<?= BASEURL . 'uploads/' . htmlspecialchars($mail['file']) ?>"
-                                                                target="_blank">View Attachment</a>
+                                                            <a href="<?= BASEURL . 'uploads/' . htmlspecialchars($mail['file']) ?>" target="_blank">View Attachment</a>
                                                         <?php else: ?>
                                                             No Attachment
                                                         <?php endif; ?>
                                                     </td>
-                                                    <td>
-                                                        <a href="<?= BASEURL ?>MailsController/edit/<?= $mail['id_mail'] ?>/in"
-                                                            class="btn btn-warning btn-sm">Edit</a>
-                                                        <a href="<?= BASEURL ?>MailsController/delete/<?= $mail['id_mail'] ?>"
-                                                            class="btn btn-danger btn-sm"
-                                                            onclick="return confirm('Are you sure you want to delete this mail?');">Delete</a>
-                                                    </td>
+                                                    <?php if (!empty($user['role']) && $user['role'] === 'admin'): ?>
+                                                        <td>
+                                                            <a href="<?= BASEURL ?>MailsController/edit/<?= $mail['id_mail'] ?>/in"
+                                                                class="btn btn-warning btn-sm">Edit</a>
+                                                            <a href="<?= BASEURL ?>MailsController/delete/<?= $mail['id_mail'] ?>"
+                                                                class="btn btn-danger btn-sm"
+                                                                onclick="return confirm('Are you sure you want to delete this mail?');">Delete</a>
+                                                        </td>
+                                                    <?php endif; ?>
                                                 </tr>
                                             <?php endforeach; ?>
                                         </tbody>
                                     </table>
+
                                 </div>
                             </div>
                         </div>

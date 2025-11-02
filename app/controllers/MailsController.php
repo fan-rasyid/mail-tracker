@@ -1,10 +1,11 @@
-<?php 
+<?php
 
 require_once __DIR__ . "/../cores/Controller.php";
 
 class MailsController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         AuthHelper::requireAuth();
         $mails = $this->model('MailsModel')->getAllMails();
         $data = [
@@ -14,12 +15,14 @@ class MailsController extends Controller
         return $this->view('mail/index', $data);
     }
 
-    public function create(){
+    public function create()
+    {
         AuthHelper::requireAuth();
         return $this->view('mail/create');
     }
 
-    public function store(){
+    public function store()
+    {
         AuthHelper::requireAuth();
         // Server-side validation
         $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
@@ -35,7 +38,7 @@ class MailsController extends Controller
         if (!isset($_FILES['file']) || empty($_FILES['file']['name']) || $_FILES['file']['error'] === UPLOAD_ERR_NO_FILE) {
             $errors[] = 'File is required';
         }
-        
+
         if (!empty($errors)) {
             Flasher::setFlasher(implode(', ', $errors), 'failed', 'danger');
             header('location:' . BASEURL . 'MailsController/incomingMail');
@@ -45,7 +48,7 @@ class MailsController extends Controller
         if (UploadHelper::hasFile('file')) {
             // Use the simplified upload helper
             $upload_result = UploadHelper::upload('file', 'uploads');
-            
+
             if ($upload_result['success']) {
                 $_POST['file'] = $upload_result['file_name'];
             } else {
@@ -73,17 +76,19 @@ class MailsController extends Controller
         }
     }
 
-    public function createOutgoing(){
+    public function createOutgoing()
+    {
         AuthHelper::requireAuth();
         return $this->view('mail/create_outgoing');
     }
 
-    public function storeOutgoing(){
+    public function storeOutgoing()
+    {
         AuthHelper::requireAuth();
         // Server-side validation
         $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
         $errors = [];
-        
+
         foreach ($required_fields as $field) {
             if (empty($_POST[$field])) {
                 $errors[] = ucfirst($field) . ' is required';
@@ -94,7 +99,7 @@ class MailsController extends Controller
         if (!isset($_FILES['file']) || empty($_FILES['file']['name']) || $_FILES['file']['error'] === UPLOAD_ERR_NO_FILE) {
             $errors[] = 'File is required';
         }
-        
+
         if (!empty($errors)) {
             Flasher::setFlasher(implode(', ', $errors), 'failed', 'danger');
             header('location:' . BASEURL . 'MailsController/outgoingMail');
@@ -104,7 +109,7 @@ class MailsController extends Controller
         if (UploadHelper::hasFile('file')) {
             // Use the simplified upload helper
             $upload_result = UploadHelper::upload('file', 'uploads');
-            
+
             if ($upload_result['success']) {
                 $_POST['file'] = $upload_result['file_name'];
             } else {
@@ -132,15 +137,16 @@ class MailsController extends Controller
         }
     }
 
-    public function edit($id, $type = null){
+    public function edit($id, $type = null)
+    {
         AuthHelper::requireAuth();
         $mail = $this->model('MailsModel')->getDataById($id);
         if ($mail) {
             $data = [
-            'title' => 'Edit Mail',
-            'mails' => $mail
-        ];
-        return $this->view('mail/edit', $data);
+                'title' => 'Edit Mail',
+                'mails' => $mail
+            ];
+            return $this->view('mail/edit', $data);
         } else {
             // Redirect with error if mail not found
             Flasher::setFlasher('Mail not found', 'failed', 'danger');
@@ -153,16 +159,17 @@ class MailsController extends Controller
         }
     }
 
-    public function update(){
+    public function update()
+    {
         AuthHelper::requireAuth();
         // Server-side validation for updates - only validate if fields are being changed to empty
         // but allow existing empty values to remain unchanged
         $required_fields = ['date', 'sender', 'subject', 'recepient', 'type_mail'];
         $errors = [];
-        
+
         // Only validate that required fields aren't being emptied if they previously had values
         $mail = $this->model('MailsModel')->getDataById($_POST['id_mail']); // Get current record first
-        
+
         foreach ($required_fields as $field) {
             // Check if field is empty in submission
             if (empty($_POST[$field])) {
@@ -172,7 +179,7 @@ class MailsController extends Controller
                 }
             }
         }
-        
+
         if (!empty($errors)) {
             Flasher::setFlasher(implode(', ', $errors), 'failed', 'danger');
             // Redirect based on the type of mail being edited
@@ -187,16 +194,16 @@ class MailsController extends Controller
         if (UploadHelper::hasFile('file')) {
             // Use the simplified upload helper
             $upload_result = UploadHelper::upload('file', 'uploads');
-            
+
             if ($upload_result['success']) {
                 $new_file_name = $upload_result['file_name'];
                 $uploadDir = UPLOAD_FOLDER;
-                
+
                 // Remove old file if exists
                 if (!empty($mail['file']) && isset($mail['file']) && file_exists($uploadDir . $mail['file'])) {
                     unlink($uploadDir . $mail['file']);
                 }
-                
+
                 $_POST['file'] = $new_file_name;
             } else {
                 Flasher::setFlasher($upload_result['message'], 'failed', 'danger');
@@ -240,11 +247,12 @@ class MailsController extends Controller
         }
     }
 
-    public function delete($id){
+    public function delete($id)
+    {
         AuthHelper::requireAuth();
         // Get the mail to determine its type before deletion
         $mail = $this->model('MailsModel')->getDataById($id);
-        
+
         if ($this->model('MailsModel')->deleteMail($id) > 0) {
             Flasher::setFlasher('Mail deleted successfully', 'success', 'success');
             // Redirect based on the type of the deleted mail
@@ -266,23 +274,29 @@ class MailsController extends Controller
         }
     }
 
-    public function incomingMail(){
+    public function incomingMail()
+    {
         AuthHelper::requireAuth();
         $mails = $this->model('MailsModel')->getIncomingMails();
+        $user = $_SESSION['user'];
         $data = [
             'title' => 'Daftar Mail',
-            'mails' => $mails
+            'mails' => $mails,
+            'user' => $user
         ];
 
         return $this->view('mail/index', $data);
     }
 
-        public function outgoingMail(){
+    public function outgoingMail()
+    {
         AuthHelper::requireAuth();
         $mails = $this->model('MailsModel')->getOutgoingMails();
+        $user = $_SESSION['user'];
         $data = [
             'title' => 'Daftar Mail',
-            'mails' => $mails
+            'mails' => $mails,
+            'user' => $user
         ];
 
         return $this->view('mail/outgoingMails', $data);
