@@ -35,7 +35,7 @@
                                                 <th>Name</th>
                                                 <th>Username</th>
                                                 <th>Role</th>
-                                                <?php if (!empty($user['role']) && $user['role'] === 'admin'): ?>
+                                                <?php if (!empty($session['role']) && $session['role'] === 'admin'): ?>
                                                     <th>Action</th>
                                                 <?php endif ?>
                                             </tr>
@@ -47,7 +47,7 @@
                                                     <td><?= htmlspecialchars($admin['name']) ?></td>
                                                     <td><?= htmlspecialchars($admin['username']) ?></td>
                                                     <td><?= htmlspecialchars($admin['role']) ?></td>
-                                                    <?php if (!empty($user['role']) && $user['role'] === 'admin'): ?>
+                                                    <?php if (!empty($session['role']) && $session['role'] === 'admin'): ?>
                                                         <td>
                                                             <a href="<?= BASEURL ?>UsersController/delete/<?= $admin['id_user'] ?>"
                                                                 class="btn btn-danger btn-sm"

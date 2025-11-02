@@ -8,9 +8,11 @@ class UsersController extends Controller
     {
         AuthHelper::requireAuth();
         $users = $this->model('UsersModel')->getAllUsers();
+        $session = $_SESSION['user'];
         $data = [
             'title' => 'Daftar User',
-            'users' => $users
+            'users' => $users,
+            'session' => $session
         ];
         return $this->view('user/index', $data);
     }
